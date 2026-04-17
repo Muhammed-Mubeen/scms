@@ -1,0 +1,20 @@
+# IntelliJ IDEA Project files
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# If you want to SHARE project-level settings (like run configurations), 
+# use the following instead of ignoring the whole .idea/ folder:
+# .idea/workspace.xml
+# .idea/tasks.xml
+# .idea/shelf/
+# .idea/dictionaries/
+# .idea/libraries/
+# .idea/vcs.xml
+# .idea/modules.xml
+# .idea/deployment.xml
+# .idea/webServers.xml
+
+# Out folder (compiled files)
+out/
