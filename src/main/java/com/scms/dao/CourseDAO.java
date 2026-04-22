@@ -91,7 +91,12 @@ public class CourseDAO {
             ps.setString(1, c.getCourseCode());
             ps.setString(2, c.getCourseName());
             ps.setInt(3, c.getDepartmentId());
-            ps.setInt(4, c.getFacultyId());
+            if (c.getFacultyId() > 0) {
+                ps.setInt(4, c.getFacultyId());
+            } else {
+                ps.setNull(4, java.sql.Types.INTEGER);
+            }
+            //ps.setInt(4, c.getFacultyId());
             ps.setInt(5, c.getCredits());
             ps.setInt(6, c.getSemester());
 
@@ -118,7 +123,12 @@ public class CourseDAO {
             ps.setString(1, c.getCourseCode());
             ps.setString(2, c.getCourseName());
             ps.setInt(3, c.getDepartmentId());
-            ps.setInt(4, c.getFacultyId());
+            if (c.getFacultyId() > 0) {
+                ps.setInt(4, c.getFacultyId());
+            } else {
+                ps.setNull(4, java.sql.Types.INTEGER);
+            }
+           // ps.setInt(4, c.getFacultyId());
             ps.setInt(5, c.getCredits());
             ps.setInt(6, c.getSemester());
             ps.setInt(7, c.getCourseId());

@@ -31,6 +31,18 @@
                 <a href="${pageContext.request.contextPath}/admin/courses"
                    class="nav-link text-white">📚 Courses</a>
             </li>
+            <li class="nav-item">
+                <a href="${pageContext.request.contextPath}/admin/attendance"
+                   class="nav-link text-white">📋 Attendance</a>
+            </li>
+            <li class="nav-item">
+                <a href="${pageContext.request.contextPath}/admin/exams"
+                   class="nav-link text-white">📊 Exams</a>
+            </li>
+            <li class="nav-item">
+                <a href="${pageContext.request.contextPath}/admin/marks"
+                   class="nav-link text-white">📝 Marks</a>
+            </li>
         </ul>
     </div>
     <div class="flex-grow-1 p-4" id="mainContent">

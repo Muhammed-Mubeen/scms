@@ -82,7 +82,13 @@ public class CourseServlet extends HttpServlet {
         c.setCourseCode(req.getParameter("courseCode").trim());
         c.setCourseName(req.getParameter("courseName").trim());
         c.setDepartmentId(Integer.parseInt(req.getParameter("departmentId")));
-        c.setFacultyId(Integer.parseInt(req.getParameter("facultyId")));
+        String facultyStr = req.getParameter("facultyId");
+        if (facultyStr != null && !facultyStr.trim().isEmpty()) {
+            c.setFacultyId(Integer.parseInt(facultyStr.trim()));
+        } else {
+            c.setFacultyId(0);
+        }
+        //c.setFacultyId(Integer.parseInt(req.getParameter("facultyId")));
         c.setCredits(Integer.parseInt(req.getParameter("credits")));
         c.setSemester(Integer.parseInt(req.getParameter("semester")));
         return c;
