@@ -2,12 +2,16 @@ package com.scms.dao;
 
 import com.scms.model.Student;
 import com.scms.util.DBUtil;
+import com.scms.util.LogUtil;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StudentDAO {
+
+    private static final Logger logger = LogUtil.getLogger(StudentDAO.class);
 
     // Get all students with department name (JOIN)
     public List<Student> findAll() {
@@ -27,7 +31,10 @@ public class StudentDAO {
                 list.add(mapRow(rs));
             }
 
+            logger.debug("Fetched {} students from database", list.size());
+
         } catch (SQLException e) {
+            logger.error("Error fetching all students", e);
             e.printStackTrace();
         }
         return list;
@@ -48,9 +55,15 @@ public class StudentDAO {
             ps.setInt(1, studentId);
             ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) return mapRow(rs);
+            if (rs.next()) {
+                logger.debug("Found student with ID: {}", studentId);
+                return mapRow(rs);
+            }
+
+            logger.warn("Student not found with ID: {}", studentId);
 
         } catch (SQLException e) {
+            logger.error("Error finding student by ID: {}", studentId, e);
             e.printStackTrace();
         }
         return null;
@@ -58,16 +71,28 @@ public class StudentDAO {
 
     // Find student by roll number
     public Student findByRollNumber(String rollNumber) {
-        String sql = "SELECT * FROM students WHERE roll_number = ?";
+        String sql = """
+                SELECT s.*, d.dept_name
+                FROM students s
+                JOIN departments d ON s.department_id = d.dept_id
+                WHERE s.roll_number = ?
+                """;
 
         try (Connection con = DBUtil.getDataSource().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, rollNumber);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) return mapRow(rs);
+
+            if (rs.next()) {
+                logger.debug("Found student with roll number: {}", rollNumber);
+                return mapRow(rs);
+            }
+
+            logger.warn("Student not found with roll number: {}", rollNumber);
 
         } catch (SQLException e) {
+            logger.error("Error finding student by roll number: {}", rollNumber, e);
             e.printStackTrace();
         }
         return null;
@@ -93,9 +118,14 @@ public class StudentDAO {
             ps.setInt(7, s.getSemester());
             ps.setInt(8, s.getBatchYear());
 
-            return ps.executeUpdate() > 0;
+            boolean result = ps.executeUpdate() > 0;
+            if (result) {
+                logger.info("New student created: {} ({})", s.getName(), s.getRollNumber());
+            }
+            return result;
 
         } catch (SQLException e) {
+            logger.error("Error saving student: {}", s.getRollNumber(), e);
             e.printStackTrace();
         }
         return false;
@@ -122,9 +152,14 @@ public class StudentDAO {
             ps.setInt(7, s.getBatchYear());
             ps.setInt(8, s.getStudentId());
 
-            return ps.executeUpdate() > 0;
+            boolean result = ps.executeUpdate() > 0;
+            if (result) {
+                logger.info("Student updated: {} (ID: {})", s.getName(), s.getStudentId());
+            }
+            return result;
 
         } catch (SQLException e) {
+            logger.error("Error updating student with ID: {}", s.getStudentId(), e);
             e.printStackTrace();
         }
         return false;
@@ -138,9 +173,14 @@ public class StudentDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, studentId);
-            return ps.executeUpdate() > 0;
+            boolean result = ps.executeUpdate() > 0;
+            if (result) {
+                logger.info("Student deleted with ID: {}", studentId);
+            }
+            return result;
 
         } catch (SQLException e) {
+            logger.error("Error deleting student with ID: {}", studentId, e);
             e.printStackTrace();
         }
         return false;
@@ -158,8 +198,9 @@ public class StudentDAO {
         s.setDepartmentId(rs.getInt("department_id"));
         s.setSemester(rs.getInt("semester"));
         s.setBatchYear(rs.getInt("batch_year"));
-        try { s.setDepartmentName(rs.getString("dept_name")); }
-        catch (SQLException ignored) {}
+        try {
+            s.setDepartmentName(rs.getString("dept_name"));
+        } catch (SQLException ignored) {}
         return s;
     }
 }

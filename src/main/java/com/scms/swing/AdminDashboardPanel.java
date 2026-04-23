@@ -43,10 +43,8 @@ public class AdminDashboardPanel extends JPanel {
         tabs.addTab("📚 Courses",    new CoursePanel());
         tabs.addTab("📋 Attendance",  new AttendancePanel());
         tabs.addTab("📊 Marks",       new MarksPanel());
-        tabs.addTab("📋 Attendance", buildStubPanel("Attendance — Coming Day 4"));
-        tabs.addTab("📊 Marks",      buildStubPanel("Marks — Coming Day 4"));
-        tabs.addTab("💰 Fees",       buildStubPanel("Fees — Coming Day 5"));
-        tabs.addTab("🔔 Notices",    buildStubPanel("Notices — Coming Day 5"));
+        tabs.addTab("💰 Fees",        new FeePanel());
+        tabs.addTab("🔔 Notices",     new NoticePanel());
         tabs.addTab("📈 Reports",    buildStubPanel("Reports — Coming Day 6"));
 
         add(navbar, BorderLayout.NORTH);
