@@ -185,6 +185,33 @@ public class StudentDAO {
         }
         return false;
     }
+    public Student findByUserId(int userId) {
+        String sql = """
+            SELECT s.*, d.dept_name
+            FROM students s
+            JOIN departments d ON s.department_id = d.dept_id
+            WHERE s.user_id = ?
+            """;
+
+        try (Connection con = DBUtil.getDataSource().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                logger.debug("Found student with user ID: {}", userId);
+                return mapRow(rs);
+            }
+
+            logger.warn("Student not found with user ID: {}", userId);
+
+        } catch (SQLException e) {
+            logger.error("Error finding student by user ID: {}", userId, e);
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     // Map ResultSet row to Student object
     private Student mapRow(ResultSet rs) throws SQLException {

@@ -61,4 +61,8 @@ public class StudentService {
     public boolean deleteStudent(int studentId) {
         return studentDAO.delete(studentId);
     }
+
+    public Student getStudentByUserId(int userId) {
+        return studentDAO.findByUserId(userId);
+    }
 }

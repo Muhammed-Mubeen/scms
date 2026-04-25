@@ -13,13 +13,6 @@ public class UserService {
     public User login(String username, String password) {
         User user = userDAO.findByUsername(username);
 
-        // TEMP DEBUG
-        System.out.println("User found in DB: " + user);
-        if (user != null) {
-            System.out.println("Hash in DB:    " + user.getPasswordHash());
-            System.out.println("BCrypt check:  " + BCrypt.checkpw(password, user.getPasswordHash()));
-        }
-        // END DEBUG
 
         if (user == null) return null;
 
