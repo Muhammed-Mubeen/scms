@@ -1,0 +1,125 @@
+name: Build and Deploy to Azure
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: scmsregistry.azurecr.io
+  IMAGE_NAME: scms
+  DOCKER_BUILDKIT: 1
+
+jobs:
+  # ============================================================
+  # Test Job
+  # ============================================================
+  test:
+    runs-on: ubuntu-latest
+    name: Run Tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run unit tests
+        run: mvn test -B
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: target/surefire-reports/
+
+  # ============================================================
+  # Build Job
+  # ============================================================
+  build:
+    runs-on: ubuntu-latest
+    name: Build and Push Docker Image
+    needs: test
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build WAR with Maven
+        run: mvn clean package -DskipTests -B
+
+      - name: Log in to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.REGISTRY }}
+          username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
+            .
+
+      - name: Push Docker image to ACR
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: war-file
+          path: target/scms-1.0-SNAPSHOT.war
+
+  # ============================================================
+  # Deploy Job
+  # ============================================================
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Azure App Service
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ secrets.AZURE_APP_NAME }}
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Verify deployment
+        run: |
+          echo "✅ Deployment complete!"
+          echo "Application URL: https://${{ secrets.AZURE_APP_NAME }}.azurewebsites.net"
+
+      - name: Create deployment notification
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ **Deployment Successful!**\n\nApp is live at: https://${{ secrets.AZURE_APP_NAME }}.azurewebsites.net'
+            })

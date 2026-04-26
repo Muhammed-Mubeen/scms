@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  # ============================================================
+  # MySQL Database Service
+  # ============================================================
+  mysql:
+    image: mysql:8.0
+    container_name: scms-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: scms_db
+      MYSQL_USER: scms_user
+      MYSQL_PASSWORD: scms_pass
+      MYSQL_INITDB_SKIP_TZINFO: "yes"
+    ports:
+      - "3306:3306"
+    volumes:
+      # Mount SQL schema for auto-initialization
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      # Named volume for persistent data
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - scms-network
+    restart: unless-stopped
+
+  # ============================================================
+  # Tomcat Application Service
+  # ============================================================
+  scms-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: scms-app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      # Database connection via Docker service name 'mysql'
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: scms_db
+      DB_USER: scms_user
+      DB_PASSWORD: scms_pass
+
+      # Java memory settings
+      JAVA_OPTS: "-Xmx512m -Xms256m -XX:+UseG1GC"
+
+      # Logging
+      LOG_LEVEL: INFO
+    ports:
+      - "8080:8080"
+      - "8009:8009"  # AJP port (optional, for load balancer)
+    volumes:
+      # Mount logs directory for easy access
+      - ./logs:/usr/local/tomcat/logs
+      # Tomcat configuration (optional)
+      - ./tomcat-config/context.xml:/usr/local/tomcat/conf/context.xml
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - scms-network
+    restart: unless-stopped
+    # Limit resources (optional)
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+# ============================================================
+# Networks
+# ============================================================
+networks:
+  scms-network:
+    driver: bridge
+
+# ============================================================
+# Volumes
+# ============================================================
+volumes:
+  mysql_data:
+    driver: local

@@ -1,19 +1,10 @@
-2026-04-23 10:06:03.312 [main] WARN  com.scms.service.FeeService - Invalid fee amount: 0.0
-2026-04-23 10:06:03.316 [main] WARN  com.scms.service.FeeService - Invalid payment amount: -500.0
-2026-04-23 10:06:03.318 [main] WARN  com.scms.service.FeeService - Due date is null
-2026-04-23 10:06:03.320 [main] WARN  com.scms.service.FeeService - Invalid fee amount: -1000.0
-2026-04-23 10:06:03.321 [main] WARN  com.scms.service.FeeService - Invalid payment amount: 0.0
-2026-04-23 10:37:17.433 [AWT-EventQueue-0] DEBUG com.scms.dao.StudentDAO - Fetched 4 students from database
-2026-04-23 10:37:17.673 [AWT-EventQueue-0] DEBUG com.scms.dao.StudentDAO - Fetched 4 students from database
-2026-04-23 10:37:17.692 [AWT-EventQueue-0] DEBUG com.scms.service.FeeService - Retrieving all fees
-2026-04-23 10:37:17.708 [AWT-EventQueue-0] DEBUG com.scms.service.FeeService - Total collected calculated: ₹250000.0
-2026-04-23 10:37:17.717 [AWT-EventQueue-0] DEBUG com.scms.service.FeeService - Total dues calculated: ₹125000.0
-2026-04-23 10:37:36.506 [AWT-EventQueue-0] DEBUG com.scms.service.FeeService - Retrieving pending fees
-2026-04-23 10:37:38.274 [AWT-EventQueue-0] DEBUG com.scms.service.FeeService - Retrieving all fees
-2026-04-23 10:37:38.281 [AWT-EventQueue-0] DEBUG com.scms.service.FeeService - Total collected calculated: ₹250000.0
-2026-04-23 10:37:38.284 [AWT-EventQueue-0] DEBUG com.scms.service.FeeService - Total dues calculated: ₹125000.0
-2026-04-23 10:40:18.259 [main] WARN  com.scms.service.FeeService - Invalid fee amount: 0.0
-2026-04-23 10:40:18.301 [main] WARN  com.scms.service.FeeService - Invalid payment amount: -500.0
-2026-04-23 10:40:18.307 [main] WARN  com.scms.service.FeeService - Due date is null
-2026-04-23 10:40:18.313 [main] WARN  com.scms.service.FeeService - Invalid fee amount: -1000.0
-2026-04-23 10:40:18.317 [main] WARN  com.scms.service.FeeService - Invalid payment amount: 0.0
+2026-04-26 17:47:32.548 [main] WARN  com.scms.service.FeeService - Invalid fee amount: 0.0
+2026-04-26 17:47:32.561 [main] WARN  com.scms.service.FeeService - Invalid payment amount: -500.0
+2026-04-26 17:47:32.569 [main] WARN  com.scms.service.FeeService - Due date is null
+2026-04-26 17:47:32.575 [main] WARN  com.scms.service.FeeService - Invalid fee amount: -1000.0
+2026-04-26 17:47:32.579 [main] WARN  com.scms.service.FeeService - Invalid payment amount: 0.0
+2026-04-26 17:47:50.607 [main] WARN  com.scms.service.FeeService - Invalid fee amount: 0.0
+2026-04-26 17:47:50.614 [main] WARN  com.scms.service.FeeService - Invalid payment amount: -500.0
+2026-04-26 17:47:50.621 [main] WARN  com.scms.service.FeeService - Due date is null
+2026-04-26 17:47:50.692 [main] WARN  com.scms.service.FeeService - Invalid fee amount: -1000.0
+2026-04-26 17:47:50.697 [main] WARN  com.scms.service.FeeService - Invalid payment amount: 0.0

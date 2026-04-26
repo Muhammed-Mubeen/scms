@@ -20,6 +20,9 @@ db.properties
 .springBeans
 .sts4-cache
 
+.env
+logs/
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
