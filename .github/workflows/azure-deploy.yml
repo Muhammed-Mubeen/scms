@@ -12,9 +12,6 @@ env:
   DOCKER_BUILDKIT: 1
 
 jobs:
-  # ============================================================
-  # Test Job
-  # ============================================================
   test:
     runs-on: ubuntu-latest
     name: Run Tests
@@ -39,9 +36,6 @@ jobs:
           name: test-results
           path: target/surefire-reports/
 
-  # ============================================================
-  # Build Job
-  # ============================================================
   build:
     runs-on: ubuntu-latest
     name: Build and Push Docker Image
@@ -89,9 +83,6 @@ jobs:
           name: war-file
           path: target/scms-1.0-SNAPSHOT.war
 
-  # ============================================================
-  # Deploy Job
-  # ============================================================
   deploy:
     runs-on: ubuntu-latest
     name: Deploy to Azure App Service
@@ -101,25 +92,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ secrets.AZURE_APP_NAME }}
-          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+          app-name: scms-app
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Verify deployment
         run: |
           echo "✅ Deployment complete!"
-          echo "Application URL: https://${{ secrets.AZURE_APP_NAME }}.azurewebsites.net"
-
-      - name: Create deployment notification
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '✅ **Deployment Successful!**\n\nApp is live at: https://${{ secrets.AZURE_APP_NAME }}.azurewebsites.net'
-            })
+          echo "Application URL: https://scms-app.azurewebsites.net"
