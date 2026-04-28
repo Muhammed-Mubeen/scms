@@ -9,7 +9,6 @@ import java.util.List;
 
 public class DepartmentDAO {
 
-    // Get all departments
     public List<Department> findAll() {
         List<Department> list = new ArrayList<>();
         String sql = "SELECT * FROM departments ORDER BY dept_name";
@@ -22,7 +21,7 @@ public class DepartmentDAO {
                 Department d = new Department();
                 d.setDeptId(rs.getInt("dept_id"));
                 d.setDeptName(rs.getString("dept_name"));
-                d.setHodFacultyId(rs.getInt("hod_faculty_id"));
+                // hod_faculty_id doesn't exist in schema — removed
                 list.add(d);
             }
 
@@ -32,7 +31,6 @@ public class DepartmentDAO {
         return list;
     }
 
-    // Get department by ID
     public Department findById(int deptId) {
         String sql = "SELECT * FROM departments WHERE dept_id = ?";
 
@@ -55,7 +53,6 @@ public class DepartmentDAO {
         return null;
     }
 
-    // Save new department
     public boolean save(Department dept) {
         String sql = "INSERT INTO departments (dept_name) VALUES (?)";
 

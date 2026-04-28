@@ -9,15 +9,15 @@ import java.util.List;
 
 public class CourseDAO {
 
-    // Get all courses with dept + faculty name (JOIN)
     public List<Course> findAll() {
         List<Course> list = new ArrayList<>();
+        // Fixed: JOIN users table instead of non-existent faculty table
         String sql = """
                 SELECT c.*, d.dept_name,
-                       CONCAT(f.name) AS faculty_name
+                       u.username AS faculty_name
                 FROM courses c
                 JOIN departments d ON c.department_id = d.dept_id
-                LEFT JOIN faculty f ON c.faculty_id = f.faculty_id
+                LEFT JOIN users u ON c.faculty_id = u.user_id
                 ORDER BY c.course_code
                 """;
 
@@ -35,14 +35,13 @@ public class CourseDAO {
         return list;
     }
 
-    // Find course by ID
     public Course findById(int courseId) {
         String sql = """
                 SELECT c.*, d.dept_name,
-                       f.name AS faculty_name
+                       u.username AS faculty_name
                 FROM courses c
                 JOIN departments d ON c.department_id = d.dept_id
-                LEFT JOIN faculty f ON c.faculty_id = f.faculty_id
+                LEFT JOIN users u ON c.faculty_id = u.user_id
                 WHERE c.course_id = ?
                 """;
 
@@ -59,7 +58,6 @@ public class CourseDAO {
         return null;
     }
 
-    // Find courses by department
     public List<Course> findByDepartment(int deptId) {
         List<Course> list = new ArrayList<>();
         String sql = "SELECT * FROM courses WHERE department_id = ? ORDER BY semester";
@@ -77,7 +75,6 @@ public class CourseDAO {
         return list;
     }
 
-    // Save new course
     public boolean save(Course c) {
         String sql = """
                 INSERT INTO courses
@@ -96,10 +93,8 @@ public class CourseDAO {
             } else {
                 ps.setNull(4, java.sql.Types.INTEGER);
             }
-            //ps.setInt(4, c.getFacultyId());
             ps.setInt(5, c.getCredits());
             ps.setInt(6, c.getSemester());
-
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
@@ -108,7 +103,6 @@ public class CourseDAO {
         return false;
     }
 
-    // Update course
     public boolean update(Course c) {
         String sql = """
                 UPDATE courses
@@ -128,11 +122,9 @@ public class CourseDAO {
             } else {
                 ps.setNull(4, java.sql.Types.INTEGER);
             }
-           // ps.setInt(4, c.getFacultyId());
             ps.setInt(5, c.getCredits());
             ps.setInt(6, c.getSemester());
             ps.setInt(7, c.getCourseId());
-
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
@@ -141,7 +133,6 @@ public class CourseDAO {
         return false;
     }
 
-    // Delete course
     public boolean delete(int courseId) {
         String sql = "DELETE FROM courses WHERE course_id = ?";
 
@@ -157,7 +148,6 @@ public class CourseDAO {
         return false;
     }
 
-    // Map ResultSet to Course
     private Course mapRow(ResultSet rs) throws SQLException {
         Course c = new Course();
         c.setCourseId(rs.getInt("course_id"));

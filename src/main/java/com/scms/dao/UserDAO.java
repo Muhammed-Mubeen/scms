@@ -9,7 +9,8 @@ public class UserDAO {
 
     // Find user by username (used during login)
     public User findByUsername(String username) {
-        String sql = "SELECT * FROM users WHERE username = ? AND is_active = TRUE";
+        // Removed AND is_active = TRUE — column doesn't exist in schema
+        String sql = "SELECT * FROM users WHERE username = ?";
         try (Connection con = DBUtil.getDataSource().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -22,7 +23,6 @@ public class UserDAO {
                 user.setUsername(rs.getString("username"));
                 user.setPasswordHash(rs.getString("password_hash"));
                 user.setRole(rs.getString("role"));
-                user.setActive(rs.getBoolean("is_active"));
                 return user;
             }
 
